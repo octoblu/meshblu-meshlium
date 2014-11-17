@@ -5,6 +5,8 @@
     "start": "node command.js"
   },
   "dependencies": {
+    "debug": "^2.1.0",
+    "mosca": "^0.25.1",
     "skynet": "^1.1.1"
   },
   "keywords": [
