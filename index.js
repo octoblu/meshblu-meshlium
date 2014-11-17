@@ -6,14 +6,6 @@ var debug = require('debug')('meshblu-meshlium');
 var MESSAGE_SCHEMA = {
   type: 'object',
   properties: {
-    exampleBoolean: {
-      type: 'boolean',
-      required: true
-    },
-    exampleString: {
-      type: 'string',
-      required: true
-    }
   }
 };
 
@@ -66,8 +58,9 @@ Plugin.prototype.setOptions = function(options){
       return;
     }
 
-    debug('published', client.id, packet.topic, packet.payload.toString());
-    self.emit({devices: '*', topic: packet.topic, payload: packet.payload.toString()});
+    var message = {devices: '*', topic: packet.topic, payload: packet.payload.toString()};
+    debug('emit', 'message', message);
+    self.emit('message', message);
   });
 };
 
