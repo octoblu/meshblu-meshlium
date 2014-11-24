@@ -6,7 +6,8 @@
   },
   "dependencies": {
     "debug": "^2.1.0",
-    "mosca": "^0.25.1",
+    "lodash": "^2.4.1",
+    "mqtt": "^0.3.13",
     "skynet": "^1.1.1"
   },
   "keywords": [

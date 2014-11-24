@@ -1,7 +1,9 @@
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
-var mosca = require('mosca');
+var mqtt = require('mqtt');
 var debug = require('debug')('meshblu-meshlium');
+var parseString = require('xml2js').parseString;
+var _ = require('lodash');
 
 var MESSAGE_SCHEMA = {
   type: 'object',
@@ -36,32 +38,64 @@ Plugin.prototype.onMessage = function(message){
 };
 
 Plugin.prototype.setOptions = function(options){
-  var self = this;
+  var plugin = this;
+
+  var publish = _.throttle(function(packet) {
+    plugin.emit('message', { topic: 'message', devices: '*', payload: packet.payload });
+  }, 100);
 
   this.options = options;
-  this.server = new mosca.Server({});
 
-  this.server.on('ready', function(){
-    debug('Mosca server is up and running.');
-  });
+  this.server = mqtt.createServer(function(client) {
+    var self = this;
 
-  this.server.on('clientConnected', function(client){
-    debug('clientConnected', client.id);
-  })
+    if (!self.clients) self.clients = {};
 
-  this.server.on('clientDisconnected', function(client){
-    debug('clientDisonnected', client.id);
-  })
+    client.on('connect', function(packet) {
+      client.connack({returnCode: 0});
+    });
 
-  this.server.on('published', function(packet, client){
-    if(!client){
-      return;
-    }
+    client.on('publish', function(packet) {
+      parseString(packet.payload, function (error, result) {
+        if (!error) {
+          packet.payload = result;
+        }
+      });
 
-    var message = {devices: '*', topic: packet.topic, payload: packet.payload.toString()};
-    debug('emit', 'message', message);
-    self.emit('message', message);
-  });
+      publish(packet);
+
+      if (packet.qos === 2) {
+        client.puback({messageId: packet.messageId});
+      }
+    });
+
+    client.on('subscribe', function(packet) {
+      client.suback({granted: granted, messageId: packet.messageId});
+    });
+
+    client.on('pingreq', function(packet) {
+      client.pingresp();
+    });
+
+    client.on('disconnect', function(packet) {
+      client.stream.end();
+    });
+
+    client.on('close', function(err) {
+      delete self.clients[client.id];
+    });
+
+    client.on('error', function(err) {
+      console.log('error!', err);
+
+      if (!self.clients[client.id]) return;
+
+      client.stream.end();
+      console.dir(err);
+    });
+
+  }).listen(process.argv[2] || 1884);
+
 };
 
 module.exports = {

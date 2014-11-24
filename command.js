@@ -37,6 +37,7 @@ conx.on('message', function(){
 });
 
 plugin.on('message', function(message){
+  debugger;
   conx.message(message);
 });
 
