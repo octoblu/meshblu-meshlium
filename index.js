@@ -11,15 +11,7 @@ var MESSAGE_SCHEMA = {
   }
 };
 
-var OPTIONS_SCHEMA = {
-  type: 'object',
-  properties: {
-    firstExampleOption: {
-      type: 'string',
-      required: true
-    }
-  }
-};
+var OPTIONS_SCHEMA = {};
 
 function Plugin(){
   this.options = {};
@@ -33,7 +25,6 @@ Plugin.prototype.onMessage = function(message){
   if(!this.server){
     return;
   }
-
   this.server.publish({topic: message.topic, qos: 0, payload: message.payload, retain: false});
 };
 
@@ -41,10 +32,16 @@ Plugin.prototype.setOptions = function(options){
   var plugin = this;
 
   var publish = _.throttle(function(packet) {
+    debug("calling emit publish!");
     plugin.emit('message', { topic: 'message', devices: '*', payload: packet.payload });
   }, 100);
 
   this.options = options;
+
+  if (this.server) {
+    debug("restarting mqtt server on new config options!");
+    this.server.close();
+  }
 
   this.server = mqtt.createServer(function(client) {
     var self = this;
@@ -56,6 +53,7 @@ Plugin.prototype.setOptions = function(options){
     });
 
     client.on('publish', function(packet) {
+      debug('publishing! ',packet);
       parseString(packet.payload, function (error, result) {
         if (!error) {
           packet.payload = result;
