@@ -1,0 +1,20 @@
+sudo: false
+language: node_js
+cache:
+  bundler: true
+  directories:
+    - node_modules
+notifications:
+  flowdock: e7454f5285e7b9ab67009802d5560490
+node_js:
+- '0.10'
+deploy:
+  provider: npm
+  skip_cleanup: true
+  clean_up: false
+  email: serveradmin@octoblu.com
+  api_key:
+    secure: JFF+nQH+GgMQQEAQ32JD6meFmi/idaTfc03Czj9HCwf03RLAgX4cFfaFTy4ksSihRaVmcseVEKAymgs3OzqRP+TqnYUPqetnrKetIg3CD6OfsOIqb9hGVYV9uiZx6d/jEjKhrde7UKaMcGt4f+cORn06TWdujHG7SKXs/f8Maxg=
+  on:
+    tags: true
+    all_branches: true
