@@ -1,16 +1,35 @@
 {
   "name": "meshblu-meshlium",
-  "version": "1.2.0",
+  "repository": "octoblu/meshblu-meshlium",
+  "version": "1.2.1",
+  "main": "connector.js",
   "scripts": {
-    "start": "node command.js"
+    "preinstall": "node -e \"try{require('./skip-install.js')}catch(e){}\"",
+    "start": "node command.js",
+    "test": "exit 0"
   },
   "dependencies": {
-    "debug": "^2.1.0",
-    "lodash": "^2.4.1",
-    "mqtt": "^0.3.13",
-    "meshblu": "^1.9.0",
-    "xml2js": "^0.4.4"
+    "debug": "^2.2.0",
+    "lodash": "^3.10.1",
+    "meshblu": "^1.30.1",
+    "meshblu-config": "^3.1.1",
+    "mqtt": "^1.4.1",
+    "xml2js": "^0.4.12"
   },
+  "bundledDependencies": [
+    "request",
+    "tar",
+    "fstream"
+  ],
+  "platformDependencies": {
+    "darwin": [],
+    "win32": [],
+    "win64": [],
+    "linux": [],
+    "android": [],
+    "ios": []
+  },
+  "license": "MIT",
   "keywords": [
     "meshblu-connector",
     "gateblu"

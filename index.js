@@ -1,14 +1,13 @@
-var util = require('util');
+var util         = require('util');
 var EventEmitter = require('events').EventEmitter;
-var mqtt = require('mqtt');
-var debug = require('debug')('meshblu-meshlium');
-var parseString = require('xml2js').parseString;
-var _ = require('lodash');
+var mqtt         = require('mqtt');
+var debug        = require('debug')('meshblu-meshlium');
+var parseString  = require('xml2js').parseString;
+var _            = require('lodash');
 
 var MESSAGE_SCHEMA = {
   type: 'object',
-  properties: {
-  }
+  properties: {}
 };
 
 var OPTIONS_SCHEMA = {};
